@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedCare HMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #0a3d62;
+      --primary-light: #1a5276;
+      --accent: #00b4d8;
+      --accent-light: #90e0ef;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1a2332;
+      --text-muted: #6b7280;
+      --border: #e2e8f0;
+      --sidebar-width: 260px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    h1,h2,h3,h4,h5 { font-family: 'Playfair Display', serif; }
+
+    
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, #1565c0 50%, var(--accent) 100%);
+      padding: 20px;
+    }
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+      overflow: hidden;
+      width: 100%;
+      max-width: 460px;
+    }
+    .auth-header {
+      background: var(--primary);
+      color: white;
+      padding: 32px;
+      text-align: center;
+    }
+    .auth-header .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .auth-header .logo span { color: var(--accent-light); }
+    .auth-body { padding: 32px; }
+    .auth-tab {
+      display: flex;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab button {
+      flex: 1; border: none; padding: 10px;
+      border-radius: 10px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      background: transparent; color: var(--text-muted);
+    }
+    .auth-tab button.active {
+      background: white; color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    
+    .app-layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      transition: transform .3s;
+    }
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .sidebar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700;
+      color: white; letter-spacing: -.5px;
+    }
+    .sidebar-brand .brand-name span { color: var(--accent-light); }
+    .sidebar-brand .brand-role {
+      font-size: .75rem; color: rgba(255,255,255,.6);
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .nav-item { margin-bottom: 4px; }
+    .nav-link-custom {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 12px;
+      color: rgba(255,255,255,.7); text-decoration: none;
+      font-weight: 500; transition: all .2s; cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-link-custom:hover, .nav-link-custom.active {
+      background: rgba(255,255,255,.15);
+      color: white;
+    }
+    .nav-link-custom i { font-size: 1.1rem; width: 20px; text-align: center; }
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .logout-btn {
+      width: 100%; border: 1px solid rgba(255,255,255,.3);
+      color: rgba(255,255,255,.8); background: none;
+      padding: 10px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; transition: all .2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,.1); color: white; }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 32px;
+      min-height: 100vh;
+    }
+    .page-header {
+      margin-bottom: 28px;
+    }
+    .page-header h2 { margin: 0 0 4px; font-size: 1.8rem; color: var(--primary); }
+    .page-header p { color: var(--text-muted); margin: 0; }
+
+    
+    .card { border: none; border-radius: 16px; box-shadow: 0 1px 6px rgba(0,0,0,.07); }
+    .card-header { background: none; border-bottom: 1px solid var(--border); font-weight: 600; }
+    .stat-card {
+      background: white; border-radius: 16px;
+      padding: 24px; box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    }
+    .stat-card .stat-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 16px;
+    }
+    .stat-card .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+    .stat-card .stat-label { color: var(--text-muted); font-size: .85rem; }
+
+    
+    .badge-booked { background: #dbeafe; color: #1e40af; }
+    .badge-completed { background: #d1fae5; color: #065f46; }
+    .badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+    
+    .table { --bs-table-hover-bg: rgba(0,180,216,.05); }
+    .table th { font-weight: 600; color: var(--text-muted); font-size: .8rem;
+      text-transform: uppercase; letter-spacing: .5px; border-top: none; }
+
+    
+    .form-control, .form-select {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; transition: all .2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,180,216,.1);
+    }
+    .btn-primary-custom {
+      background: var(--primary); color: white; border: none;
+      border-radius: 10px; padding: 10px 20px; font-weight: 600;
+      transition: all .2s; cursor: pointer;
+    }
+    .btn-primary-custom:hover { background: var(--primary-light); }
+    .btn-accent {
+      background: var(--accent); color: white; border: none;
+      border-radius: 10px; padding: 8px 16px; font-weight: 600;
+      transition: all .2s; cursor: pointer; font-size: .85rem;
+    }
+    .btn-accent:hover { background: #0096b7; }
+
+    .avail-grid { display: flex; flex-direction: column; gap: 8px; }
+    .avail-row {
+      display: grid; grid-template-columns: 120px 1fr 1fr;
+      gap: 8px; align-items: center;
+    }
+    .avail-slot {
+      padding: 8px 12px; border-radius: 8px; text-align: center;
+      font-size: .85rem; font-weight: 600; cursor: pointer;
+      border: 2px solid transparent; transition: all .2s;
+    }
+    .avail-slot.morning { background: #dbeafe; color: #1e40af; }
+    .avail-slot.evening { background: #fef3c7; color: #92400e; }
+    .avail-slot.selected { border-color: var(--accent); }
+    .avail-slot.booked { background: #fee2e2; color: #991b1b; cursor: not-allowed; }
+
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast-msg {
+      background: white; border-radius: 12px; padding: 14px 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15); margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px;
+      animation: slideIn .3s ease;
+    }
+    .toast-msg.success { border-left: 4px solid var(--success); }
+    .toast-msg.error { border-left: 4px solid var(--danger); }
+    .toast-msg.info { border-left: 4px solid var(--accent); }
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    
+    .doctor-card {
+      background: white; border-radius: 16px; padding: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07); transition: all .2s;
+    }
+    .doctor-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,.1); }
+    .doctor-avatar {
+      width: 60px; height: 60px; background: var(--primary);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; color: white; font-size: 1.4rem;
+      font-weight: 700; flex-shrink: 0;
+    }
+
+    
+    .modal-content { border-radius: 16px; border: none; }
+    .modal-header { border-bottom: 1px solid var(--border); }
+
+    
+    .dept-card {
+      background: white; border-radius: 14px; padding: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; transition: all .2s; text-decoration: none; color: inherit;
+    }
+    .dept-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+    .dept-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    }
+
+    .visit-row { border-left: 3px solid var(--accent); margin-bottom: 12px;
+      background: white; border-radius: 0 12px 12px 0; padding: 16px; }
+
+    
+    .search-bar {
+      background: white; border-radius: 12px; padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    }
+    .search-bar input { border: none; outline: none; flex: 1; font-family: inherit; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  
+  <div class="toast-container">
+    <div v-for="toast in toasts" :key="toast.id" :class="['toast-msg', toast.type]">
+      <i :class="toast.type === 'success' ? 'bi bi-check-circle-fill text-success' : toast.type === 'error' ? 'bi bi-x-circle-fill text-danger' : 'bi bi-info-circle-fill text-info'"></i>
+      <span>{{ toast.message }}</span>
+    </div>
+  </div>
+
+  
+  <div v-if="!isLoggedIn" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo">Med<span>Care</span></div>
+        <div class="mt-1" style="font-size:.9rem;opacity:.8;">Hospital Management System</div>
+      </div>
+      <div class="auth-body">
+        <div class="auth-tab">
+          <button :class="{active: authMode==='login'}" @click="authMode='login'">Sign In</button>
+          <button :class="{active: authMode==='register'}" @click="authMode='register'">Register</button>
+        </div>
+
+        
+        <form v-if="authMode==='login'" @submit.prevent="login">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <input v-model="loginForm.username" type="text" class="form-control" placeholder="Enter username" required/>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Password</label>
+            <input v-model="loginForm.password" type="password" class="form-control" placeholder="Enter password" required/>
+          </div>
+          <button type="submit" class="btn-primary-custom w-100" :disabled="authLoading">
+            <span v-if="authLoading"><i class="bi bi-hourglass-split me-2"></i>Signing in...</span>
+            <span v-else><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</span>
+          </button>
+          <p class="text-center mt-3 mb-0 text-muted small">
+            Patients can <a href="#" @click.prevent="authMode='register'">register here</a>. Doctors/Admin use assigned credentials.
+          </p>
+        </form>
+
+        
+        <form v-if="authMode==='register'" @submit.prevent="register">
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Username</label>
+              <input v-model="regForm.username" type="text" class="form-control" required/>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input v-model="regForm.full_name" type="text" class="form-control" required/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Email</label>
+              <input v-model="regForm.email" type="email" class="form-control" required/>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Password</label>
+              <input v-model="regForm.password" type="password" class="form-control" required minlength="6"/>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input v-model="regForm.phone" type="tel" class="form-control"/>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Gender</label>
+              <select v-model="regForm.gender" class="form-select">
+                <option value="">Select</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Date of Birth</label>
+              <input v-model="regForm.date_of_birth" type="date" class="form-control"/>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary-custom w-100 mt-3" :disabled="authLoading">
+            <span v-if="authLoading">Registering...</span>
+            <span v-else><i class="bi bi-person-plus me-2"></i>Register as Patient</span>
+          </button>
+          <p class="text-center mt-3 mb-0 text-muted small">
+            Already have an account? <a href="#" @click.prevent="authMode='login'">Login</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+  <div v-else class="app-layout">
+    <div class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-name">Med<span>Care</span></div>
+        <div class="brand-role">{{ currentUser.role }}</div>
+        <div class="mt-2" style="font-size:.85rem;opacity:.8;">{{ currentUser.username }}</div>
+      </div>
+      <nav class="sidebar-nav">
+        
+
+        <template v-if="currentUser.role==='admin'">
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminDashboard'}]" @click="navigate('adminDashboard')">
+              <i class="bi bi-grid-3x3-gap"></i> Dashboard
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminDoctors'}]" @click="navigate('adminDoctors')">
+              <i class="bi bi-person-badge"></i> Doctors
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminPatients'}]" @click="navigate('adminPatients')">
+              <i class="bi bi-people"></i> Patients
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminAppointments'}]" @click="navigate('adminAppointments')">
+              <i class="bi bi-calendar-check"></i> Appointments
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminDepartments'}]" @click="navigate('adminDepartments')">
+              <i class="bi bi-building"></i> Departments
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='adminSearch'}]" @click="navigate('adminSearch')">
+              <i class="bi bi-search"></i> Search
+            </button>
+          </div>
+        </template>
+
+        
+        <template v-if="currentUser.role==='doctor'">
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='doctorDashboard'}]" @click="navigate('doctorDashboard')">
+              <i class="bi bi-grid-3x3-gap"></i> Dashboard
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='doctorAppointments'}]" @click="navigate('doctorAppointments')">
+              <i class="bi bi-calendar-check"></i> Appointments
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='doctorPatients'}]" @click="navigate('doctorPatients')">
+              <i class="bi bi-people"></i> My Patients
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='doctorAvailability'}]" @click="navigate('doctorAvailability')">
+              <i class="bi bi-clock"></i> Availability
+            </button>
+          </div>
+        </template>
+
+        
+        <template v-if="currentUser.role==='patient'">
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientDashboard'}]" @click="navigate('patientDashboard')">
+              <i class="bi bi-grid-3x3-gap"></i> Dashboard
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientDepartments'}]" @click="navigate('patientDepartments')">
+              <i class="bi bi-building"></i> Departments
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientDoctors'}]" @click="navigate('patientDoctors')">
+              <i class="bi bi-person-badge"></i> Find Doctors
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientAppointments'}]" @click="navigate('patientAppointments')">
+              <i class="bi bi-calendar-check"></i> Appointments
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientHistory'}]" @click="navigate('patientHistory')">
+              <i class="bi bi-clock-history"></i> History
+            </button>
+          </div>
+          <div class="nav-item">
+            <button :class="['nav-link-custom', {active:currentPage==='patientProfile'}]" @click="navigate('patientProfile')">
+              <i class="bi bi-person-circle"></i> Profile
+            </button>
+          </div>
+        </template>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" @click="logout">
+          <i class="bi bi-box-arrow-left"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="main-content">
+
+      
+      <div v-if="currentPage==='adminDashboard'">
+        <div class="page-header">
+          <h2>Welcome, Admin</h2>
+          <p>Hospital overview and quick stats</p>
+        </div>
+        <div class="row g-4 mb-4" v-if="adminStats">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#dbeafe"><i class="bi bi-person-badge text-primary"></i></div>
+              <div class="stat-value">{{ adminStats.total_doctors }}</div>
+              <div class="stat-label">Total Doctors</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#d1fae5"><i class="bi bi-people" style="color:#065f46"></i></div>
+              <div class="stat-value">{{ adminStats.total_patients }}</div>
+              <div class="stat-label">Total Patients</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fef3c7"><i class="bi bi-calendar-check" style="color:#92400e"></i></div>
+              <div class="stat-value">{{ adminStats.total_appointments }}</div>
+              <div class="stat-label">Total Appointments</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fee2e2"><i class="bi bi-calendar-x" style="color:#991b1b"></i></div>
+              <div class="stat-value">{{ adminStats.booked_appointments }}</div>
+              <div class="stat-label">Booked Today</div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card p-3 text-center" style="cursor:pointer" @click="navigate('adminDoctors')">
+              <i class="bi bi-person-badge-fill fs-1 text-primary mb-2"></i>
+              <div class="fw-bold">Manage Doctors</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3 text-center" style="cursor:pointer" @click="navigate('adminPatients')">
+              <i class="bi bi-people-fill fs-1 text-success mb-2"></i>
+              <div class="fw-bold">Manage Patients</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3 text-center" style="cursor:pointer" @click="navigate('adminAppointments')">
+              <i class="bi bi-calendar-check-fill fs-1 text-warning mb-2"></i>
+              <div class="fw-bold">View Appointments</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='adminDoctors'">
+        <div class="page-header d-flex justify-content-between align-items-start">
+          <div>
+            <h2>Registered Doctors</h2>
+            <p>Manage doctor profiles and accounts</p>
+          </div>
+          <button class="btn-primary-custom" @click="openAddDoctorModal()">
+            <i class="bi bi-plus-lg me-2"></i>Add Doctor
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4">Doctor</th>
+                  <th>Department</th>
+                  <th>Specialization</th>
+                  <th>Experience</th>
+                  <th>Status</th>
+                  <th class="text-end pe-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="doc in doctors" :key="doc.id">
+                  <td class="ps-4">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="doctor-avatar" style="width:36px;height:36px;font-size:1rem;">
+                        {{ doc.full_name.charAt(0) }}
+                      </div>
+                      <div>
+                        <div class="fw-semibold">{{ doc.full_name }}</div>
+                        <div class="text-muted small">{{ doc.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ doc.department_name || '-' }}</td>
+                  <td>{{ doc.specialization || '-' }}</td>
+                  <td>{{ doc.experience_years }} yrs</td>
+                  <td>
+                    <span :class="['badge', doc.is_blacklisted ? 'badge-cancelled' : 'badge-completed']">
+                      {{ doc.is_blacklisted ? 'Blacklisted' : 'Active' }}
+                    </span>
+                  </td>
+                  <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-primary me-1" @click="openEditDoctor(doc)">Edit</button>
+                    <button class="btn btn-sm me-1" :class="doc.is_blacklisted ? 'btn-outline-success' : 'btn-outline-warning'" @click="blacklistDoctor(doc.id)">
+                      {{ doc.is_blacklisted ? 'Unblock' : 'Blacklist' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @click="deleteDoctor(doc.id)">Delete</button>
+                  </td>
+                </tr>
+                <tr v-if="!doctors.length">
+                  <td colspan="6" class="text-center text-muted py-4">No doctors registered yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='adminPatients'">
+        <div class="page-header">
+          <h2>Registered Patients</h2>
+          <p>Manage patient records</p>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4">Patient</th>
+                  <th>Phone</th>
+                  <th>Blood Group</th>
+                  <th>Status</th>
+                  <th class="text-end pe-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="p in patients" :key="p.id">
+                  <td class="ps-4">
+                    <div class="fw-semibold">{{ p.full_name }}</div>
+                    <div class="text-muted small">{{ p.email }}</div>
+                  </td>
+                  <td>{{ p.phone || '-' }}</td>
+                  <td>{{ p.blood_group || '-' }}</td>
+                  <td>
+                    <span :class="['badge', p.is_blacklisted ? 'badge-cancelled' : 'badge-completed']">
+                      {{ p.is_blacklisted ? 'Blacklisted' : 'Active' }}
+                    </span>
+                  </td>
+                  <td class="text-end pe-4">
+                    <button class="btn btn-sm me-1" :class="p.is_blacklisted ? 'btn-outline-success' : 'btn-outline-warning'" @click="blacklistPatient(p.id)">
+                      {{ p.is_blacklisted ? 'Unblock' : 'Blacklist' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" @click="viewPatientHistory(p)">History</button>
+                  </td>
+                </tr>
+                <tr v-if="!patients.length">
+                  <td colspan="5" class="text-center text-muted py-4">No patients registered yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='adminAppointments'">
+        <div class="page-header">
+          <h2>All Appointments</h2>
+          <p>View and monitor all hospital appointments</p>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4">#</th>
+                  <th>Patient</th>
+                  <th>Doctor</th>
+                  <th>Department</th>
+                  <th>Date</th>
+                  <th>Slot</th>
+                  <th>Status</th>
+                  <th>History</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="apt in appointments" :key="apt.id">
+                  <td class="ps-4">{{ apt.id }}</td>
+                  <td>{{ apt.patient_name }}</td>
+                  <td>{{ apt.doctor_name }}</td>
+                  <td>{{ apt.department || '-' }}</td>
+                  <td>{{ apt.date }}</td>
+                  <td>{{ apt.time_slot }}</td>
+                  <td>
+                    <span :class="['badge', statusBadge(apt.status)]">{{ apt.status }}</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" @click="viewAppointmentDetail(apt)">View</button>
+                  </td>
+                </tr>
+                <tr v-if="!appointments.length">
+                  <td colspan="8" class="text-center text-muted py-4">No appointments found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='adminDepartments'">
+        <div class="page-header d-flex justify-content-between align-items-start">
+          <div>
+            <h2>Departments</h2>
+            <p>Manage hospital departments and specializations</p>
+          </div>
+          <button class="btn-primary-custom" @click="openAddDeptModal()">
+            <i class="bi bi-plus-lg me-2"></i>Add Department
+          </button>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4" v-for="dept in departments" :key="dept.id">
+            <div class="card p-4">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="dept-icon" style="background:#dbeafe"><i class="bi bi-building text-primary"></i></div>
+                <div>
+                  <div class="fw-bold">{{ dept.name }}</div>
+                  <div class="text-muted small">{{ dept.doctors_count }} doctors</div>
+                </div>
+              </div>
+              <p class="text-muted small mb-0">{{ dept.description || 'No description provided.' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='adminSearch'">
+        <div class="page-header">
+          <h2>Search</h2>
+          <p>Search for doctors or patients</p>
+        </div>
+        <div class="search-bar mb-4">
+          <i class="bi bi-search text-muted"></i>
+          <input v-model="searchQuery" @input="doSearch" placeholder="Search by name, specialization, phone..." class="fs-6"/>
+          <select v-model="searchType" @change="doSearch" class="form-select form-select-sm" style="width:120px">
+            <option value="all">All</option>
+            <option value="doctor">Doctors</option>
+            <option value="patient">Patients</option>
+          </select>
+        </div>
+        <div v-if="searchResults">
+          <div v-if="searchResults.doctors && searchResults.doctors.length" class="mb-4">
+            <h5 class="mb-3">Doctors ({{ searchResults.doctors.length }})</h5>
+            <div class="row g-3">
+              <div class="col-md-6" v-for="doc in searchResults.doctors" :key="'d'+doc.id">
+                <div class="doctor-card d-flex gap-3">
+                  <div class="doctor-avatar">{{ doc.full_name.charAt(0) }}</div>
+                  <div>
+                    <div class="fw-bold">{{ doc.full_name }}</div>
+                    <div class="text-muted small">{{ doc.specialization }} &bull; {{ doc.department_name }}</div>
+                    <div class="text-muted small">{{ doc.experience_years }} years exp.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="searchResults.patients && searchResults.patients.length">
+            <h5 class="mb-3">Patients ({{ searchResults.patients.length }})</h5>
+            <div class="row g-3">
+              <div class="col-md-6" v-for="p in searchResults.patients" :key="'p'+p.id">
+                <div class="card p-3">
+                  <div class="fw-bold">{{ p.full_name }}</div>
+                  <div class="text-muted small">{{ p.email }} &bull; {{ p.phone }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="(!searchResults.doctors || !searchResults.doctors.length) && (!searchResults.patients || !searchResults.patients.length)">
+            <div class="text-center text-muted py-5"><i class="bi bi-search fs-1 d-block mb-3"></i>No results found</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='doctorDashboard'">
+        <div class="page-header">
+          <h2>Welcome, Dr. {{ doctorData.doctor ? doctorData.doctor.full_name : '' }}</h2>
+          <p>{{ doctorData.doctor ? doctorData.doctor.department_name : '' }} &bull; Today's overview</p>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#dbeafe"><i class="bi bi-calendar-day text-primary"></i></div>
+              <div class="stat-value">{{ doctorData.today_appointments ? doctorData.today_appointments.length : 0 }}</div>
+              <div class="stat-label">Today's Appointments</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#d1fae5"><i class="bi bi-calendar-week" style="color:#065f46"></i></div>
+              <div class="stat-value">{{ doctorData.week_appointments ? doctorData.week_appointments.length : 0 }}</div>
+              <div class="stat-label">This Week</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fef3c7"><i class="bi bi-people" style="color:#92400e"></i></div>
+              <div class="stat-value">{{ doctorData.assigned_patients ? doctorData.assigned_patients.length : 0 }}</div>
+              <div class="stat-label">Assigned Patients</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="card">
+              <div class="card-header py-3">Upcoming Appointments</div>
+              <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr><th class="ps-3">Sr.</th><th>Patient</th><th>Date</th><th>Slot</th><th>Status</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(apt, idx) in doctorData.week_appointments" :key="apt.id">
+                      <td class="ps-3">{{ idx + 1 }}</td>
+                      <td>{{ apt.patient_name }}</td>
+                      <td>{{ apt.date }}</td>
+                      <td><span class="badge bg-light text-dark">{{ apt.time_slot }}</span></td>
+                      <td><span :class="['badge', statusBadge(apt.status)]">{{ apt.status }}</span></td>
+                      <td>
+                        <template v-if="apt.status === 'Booked'">
+                          <button class="btn btn-sm btn-outline-primary me-1" @click="openTreatmentModal(apt)">Treat</button>
+                          <button class="btn btn-sm btn-outline-success me-1" @click="updateAptStatus(apt.id,'Completed')">✓ Complete</button>
+                          <button class="btn btn-sm btn-outline-danger" @click="updateAptStatus(apt.id,'Cancelled')">✗ Cancel</button>
+                        </template>
+                        <span v-else-if="apt.status === 'Completed'" class="text-success fw-semibold small"><i class="bi bi-check-circle-fill me-1"></i>Done</span>
+                        <span v-else class="text-muted small">Cancelled</span>
+                      </td>
+                    </tr>
+                    <tr v-if="!doctorData.week_appointments || !doctorData.week_appointments.length">
+                      <td colspan="6" class="text-center text-muted py-4">No upcoming appointments</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card">
+              <div class="card-header py-3">Assigned Patients</div>
+              <div class="card-body p-0">
+                <div v-for="p in doctorData.assigned_patients" :key="p.id" class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+                  <div>
+                    <div class="fw-semibold">{{ p.full_name }}</div>
+                    <div class="text-muted small">{{ p.gender }} &bull; {{ p.blood_group }}</div>
+                  </div>
+                  <button class="btn-accent" @click="viewPatientHistoryDoctor(p)">View</button>
+                </div>
+                <div v-if="!doctorData.assigned_patients || !doctorData.assigned_patients.length" class="text-center text-muted py-4">No patients assigned</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='doctorAvailability'">
+        <div class="page-header">
+          <h2>Set Availability</h2>
+          <p>Provide your availability for the next 7 days</p>
+        </div>
+        <div class="card p-4">
+          <div class="avail-grid">
+            <div class="avail-row" style="font-weight:600;color:var(--text-muted);font-size:.8rem;">
+              <div>DATE</div><div>MORNING SLOT</div><div>EVENING SLOT</div>
+            </div>
+            <div class="avail-row" v-for="avail in availabilityForm" :key="avail.date">
+              <div class="fw-semibold small">{{ formatDate(avail.date) }}</div>
+              <div class="avail-slot morning" :class="{selected: avail.morning_selected}"
+                   @click="avail.morning_selected = !avail.morning_selected">
+                <div>{{ avail.morning_start }} - {{ avail.morning_end }}</div>
+              </div>
+              <div class="avail-slot evening" :class="{selected: avail.evening_selected}"
+                   @click="avail.evening_selected = !avail.evening_selected">
+                <div>{{ avail.evening_start }} - {{ avail.evening_end }}</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary-custom mt-4" @click="saveAvailability">
+            <i class="bi bi-save me-2"></i>Save Availability
+          </button>
+          <div class="text-muted small mt-2">Click on a slot to toggle availability. Morning: 08:00-12:00 | Evening: 16:00-21:00</div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='doctorAppointments'">
+        <div class="page-header">
+          <h2>All Appointments</h2>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr><th class="ps-4">Patient</th><th>Date</th><th>Slot</th><th>Visit Type</th><th>Status</th><th class="text-end pe-4">Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr v-for="apt in myAppointments" :key="apt.id">
+                  <td class="ps-4">{{ apt.patient_name }}</td>
+                  <td>{{ apt.date }}</td>
+                  <td>{{ apt.time_slot }}</td>
+                  <td>{{ apt.visit_type }}</td>
+                  <td><span :class="['badge', statusBadge(apt.status)]">{{ apt.status }}</span></td>
+                  <td class="text-end pe-4">
+                    <button v-if="apt.status==='Booked'" class="btn btn-sm btn-outline-primary me-1" @click="openTreatmentModal(apt)">Treat</button>
+                    <button v-if="apt.status==='Booked'" class="btn btn-sm btn-outline-success me-1" @click="updateAptStatus(apt.id,'Completed')">Complete</button>
+                    <button v-if="apt.status==='Booked'" class="btn btn-sm btn-outline-danger" @click="updateAptStatus(apt.id,'Cancelled')">Cancel</button>
+                  </td>
+                </tr>
+                <tr v-if="!myAppointments.length">
+                  <td colspan="6" class="text-center text-muted py-4">No appointments found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='doctorPatients'">
+        <div class="page-header">
+          <h2>My Patients</h2>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6" v-for="p in doctorData.assigned_patients" :key="p.id">
+            <div class="doctor-card d-flex gap-3 align-items-center">
+              <div class="doctor-avatar" style="background:var(--success)">{{ p.full_name.charAt(0) }}</div>
+              <div class="flex-grow-1">
+                <div class="fw-bold">{{ p.full_name }}</div>
+                <div class="text-muted small">{{ p.gender }} &bull; {{ p.blood_group }} &bull; {{ p.phone }}</div>
+              </div>
+              <button class="btn-accent" @click="viewPatientHistoryDoctor(p)">History</button>
+            </div>
+          </div>
+          <div class="col-12" v-if="!doctorData.assigned_patients || !doctorData.assigned_patients.length">
+            <div class="text-center text-muted py-5">No patients assigned yet</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientDashboard'">
+        <div class="page-header">
+          <h2>Welcome, {{ patientData.patient ? patientData.patient.full_name : '' }}</h2>
+          <p>Your health dashboard</p>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#dbeafe"><i class="bi bi-calendar-check text-primary"></i></div>
+              <div class="stat-value">{{ patientData.upcoming_appointments ? patientData.upcoming_appointments.length : 0 }}</div>
+              <div class="stat-label">Upcoming Appointments</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#d1fae5"><i class="bi bi-clock-history" style="color:#065f46"></i></div>
+              <div class="stat-value">{{ patientData.past_appointments ? patientData.past_appointments.length : 0 }}</div>
+              <div class="stat-label">Past Visits</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fef3c7"><i class="bi bi-building" style="color:#92400e"></i></div>
+              <div class="stat-value">{{ patientData.departments ? patientData.departments.length : 0 }}</div>
+              <div class="stat-label">Departments</div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="card mb-4">
+          <div class="card-header py-3">Upcoming Appointments</div>
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr><th class="ps-4">Sr.</th><th>Doctor</th><th>Dept</th><th>Date</th><th>Time</th><th>Status</th><th class="pe-4">Action</th></tr>
+              </thead>
+              <tbody>
+                <tr v-for="(apt, idx) in patientData.upcoming_appointments" :key="apt.id">
+                  <td class="ps-4">{{ idx + 1001 }}</td>
+                  <td>{{ apt.doctor_name }}</td>
+                  <td>{{ apt.department }}</td>
+                  <td>{{ apt.date }}</td>
+                  <td>{{ apt.time_slot }}</td>
+                  <td><span :class="['badge', statusBadge(apt.status)]">{{ apt.status }}</span></td>
+                  <td class="pe-4"><button class="btn btn-sm btn-outline-danger" @click="cancelAppointment(apt.id)">Cancel</button></td>
+                </tr>
+                <tr v-if="!patientData.upcoming_appointments || !patientData.upcoming_appointments.length">
+                  <td colspan="7" class="text-center text-muted py-4">No upcoming appointments. <a href="#" @click.prevent="navigate('patientDoctors')">Book one!</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientDepartments'">
+        <div class="page-header">
+          <h2>Departments</h2>
+          <p>Explore our specialized medical departments</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-4" v-for="dept in allDepartments" :key="dept.id">
+            <div class="dept-card" @click="viewDepartmentDetail(dept)">
+              <div class="dept-icon" :style="{background: deptColors[dept.id % 7]}">
+                <i :class="deptIcons[dept.id % 7]"></i>
+              </div>
+              <div>
+                <div class="fw-bold">{{ dept.name }}</div>
+                <div class="text-muted small">{{ dept.doctors_count }} doctor(s)</div>
+              </div>
+              <i class="bi bi-chevron-right ms-auto text-muted"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientDoctors'">
+        <div class="page-header">
+          <h2>Find Doctors</h2>
+          <p>Search for available doctors by name or specialization</p>
+        </div>
+        <div class="search-bar mb-4">
+          <i class="bi bi-search text-muted"></i>
+          <input v-model="doctorSearchQ" @input="searchDoctors" placeholder="Search doctors by name or specialization..." />
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6" v-for="doc in filteredDoctors" :key="doc.id">
+            <div class="doctor-card d-flex gap-3">
+              <div class="doctor-avatar">{{ doc.full_name.charAt(0) }}</div>
+              <div class="flex-grow-1">
+                <div class="fw-bold">{{ doc.full_name }}</div>
+                <div class="text-muted small">{{ doc.specialization }}</div>
+                <div class="text-muted small"><i class="bi bi-building me-1"></i>{{ doc.department_name }}</div>
+                <div class="text-muted small"><i class="bi bi-award me-1"></i>{{ doc.qualification }}</div>
+                <div class="text-muted small"><i class="bi bi-clock me-1"></i>{{ doc.experience_years }} years experience</div>
+              </div>
+              <div>
+                <button class="btn-accent d-block mb-2" @click="checkDoctorAvailability(doc)">Availability</button>
+                <button class="btn btn-sm btn-outline-primary d-block w-100" @click="viewDoctorProfile(doc)">Profile</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12" v-if="!filteredDoctors.length">
+            <div class="text-center text-muted py-5">No doctors found</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientAppointments'">
+        <div class="page-header">
+          <h2>My Appointments</h2>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr><th class="ps-4">Doctor</th><th>Department</th><th>Date</th><th>Slot</th><th>Status</th><th class="pe-4">Actions</th></tr>
+              </thead>
+              <tbody>
+                <tr v-for="apt in allPatientAppointments" :key="apt.id">
+                  <td class="ps-4">{{ apt.doctor_name }}</td>
+                  <td>{{ apt.department }}</td>
+                  <td>{{ apt.date }}</td>
+                  <td>{{ apt.time_slot }}</td>
+                  <td><span :class="['badge', statusBadge(apt.status)]">{{ apt.status }}</span></td>
+                  <td class="pe-4">
+                    <button v-if="apt.status==='Booked'" class="btn btn-sm btn-outline-danger me-1" @click="cancelAppointment(apt.id)">Cancel</button>
+                    <button v-if="apt.status==='Booked'" class="btn btn-sm btn-outline-secondary" @click="openReschedule(apt)">Reschedule</button>
+                    <button v-if="apt.status==='Completed'" class="btn btn-sm btn-outline-primary" @click="viewAppointmentDetail(apt)">Details</button>
+                  </td>
+                </tr>
+                <tr v-if="!allPatientAppointments.length">
+                  <td colspan="6" class="text-center text-muted py-4">No appointments found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientHistory'">
+        <div class="page-header d-flex justify-content-between align-items-start">
+          <div>
+            <h2>Treatment History</h2>
+            <p>Your complete medical history</p>
+          </div>
+          <button class="btn-primary-custom" @click="exportCSV">
+            <i class="bi bi-download me-2"></i>Export CSV
+          </button>
+        </div>
+        <div v-for="(apt, idx) in patientHistory" :key="apt.id" class="visit-row mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="fw-bold">Visit #{{ idx + 1 }}</span>
+              <span class="ms-2 text-muted small">{{ apt.date }}</span>
+            </div>
+            <span class="badge badge-completed">Completed</span>
+          </div>
+          <div class="row g-2 mt-2">
+            <div class="col-md-3"><div class="text-muted small">Doctor</div><div class="fw-semibold">{{ apt.doctor_name }}</div></div>
+            <div class="col-md-3"><div class="text-muted small">Visit Type</div><div>{{ apt.visit_type }}</div></div>
+            <div class="col-md-3" v-if="apt.treatment">
+              <div class="text-muted small">Tests Done</div>
+              <div>{{ apt.treatment.tests_done || '-' }}</div>
+            </div>
+            <div class="col-md-3" v-if="apt.treatment">
+              <div class="text-muted small">Next Visit</div>
+              <div>{{ apt.treatment.next_visit || '-' }}</div>
+            </div>
+          </div>
+          <div class="row g-2 mt-1" v-if="apt.treatment">
+            <div class="col-md-4">
+              <div class="text-muted small">Diagnosis</div>
+              <div>{{ apt.treatment.diagnosis || '-' }}</div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-muted small">Prescription</div>
+              <div>{{ apt.treatment.prescription || '-' }}</div>
+            </div>
+            <div class="col-md-4">
+              <div class="text-muted small">Medicines</div>
+              <div>{{ apt.treatment.medicines || '-' }}</div>
+            </div>
+          </div>
+        </div>
+        <div v-if="!patientHistory.length" class="text-center text-muted py-5">No treatment history found</div>
+      </div>
+
+      
+      <div v-if="currentPage==='patientProfile'">
+        <div class="page-header">
+          <h2>My Profile</h2>
+          <p>Manage your personal information</p>
+        </div>
+        <div class="card p-4" style="max-width:600px">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input v-model="profileForm.full_name" class="form-control"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input v-model="profileForm.email" type="email" class="form-control"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input v-model="profileForm.phone" class="form-control"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Gender</label>
+              <select v-model="profileForm.gender" class="form-select">
+                <option value="">Select</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Date of Birth</label>
+              <input v-model="profileForm.date_of_birth" type="date" class="form-control"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Blood Group</label>
+              <select v-model="profileForm.blood_group" class="form-select">
+                <option value="">Select</option>
+                <option v-for="bg in ['A+','A-','B+','B-','AB+','AB-','O+','O-']" :key="bg">{{ bg }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Emergency Contact</label>
+              <input v-model="profileForm.emergency_contact" class="form-control"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Address</label>
+              <textarea v-model="profileForm.address" class="form-control" rows="2"></textarea>
+            </div>
+          </div>
+          <button class="btn-primary-custom mt-4" @click="updateProfile">
+            <i class="bi bi-save me-2"></i>Save Changes
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="doctorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editDoctor ? 'Edit Doctor' : 'Add New Doctor' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6" v-if="!editDoctor">
+              <label class="form-label fw-semibold">Username *</label>
+              <input v-model="doctorForm.username" class="form-control" required/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email *</label>
+              <input v-model="doctorForm.email" type="email" class="form-control" required/>
+            </div>
+            <div class="col-md-6" v-if="!editDoctor">
+              <label class="form-label fw-semibold">Password</label>
+              <input v-model="doctorForm.password" type="password" class="form-control" placeholder="Default: doctor123"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Full Name *</label>
+              <input v-model="doctorForm.full_name" class="form-control" required/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Department</label>
+              <select v-model="doctorForm.department_id" class="form-select">
+                <option value="">Select Department</option>
+                <option v-for="d in departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Specialization</label>
+              <input v-model="doctorForm.specialization" class="form-control"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Qualification</label>
+              <input v-model="doctorForm.qualification" class="form-control" placeholder="MBBS, MD..."/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Experience (years)</label>
+              <input v-model.number="doctorForm.experience_years" type="number" class="form-control" min="0"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input v-model="doctorForm.phone" class="form-control"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Bio</label>
+              <textarea v-model="doctorForm.bio" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-primary-custom" @click="saveDoctor">{{ editDoctor ? 'Update' : 'Create' }} Doctor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+
+  <div class="modal fade" id="treatmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Patient History</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" v-if="selectedAppointment">
+          <div class="mb-3 p-3 bg-light rounded">
+            <strong>Patient:</strong> {{ selectedAppointment.patient_name }}
+            &bull; <strong>Date:</strong> {{ selectedAppointment.date }}
+            &bull; <strong>Slot:</strong> {{ selectedAppointment.time_slot }}
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Visit Type</label>
+              <select v-model="treatmentForm.visit_type" class="form-select">
+                <option>In-person</option><option>Telemedicine</option><option>Follow-up</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Tests Done</label>
+              <input v-model="treatmentForm.tests_done" class="form-control" placeholder="ECG, Blood test..."/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Diagnosis</label>
+              <textarea v-model="treatmentForm.diagnosis" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Prescription</label>
+              <textarea v-model="treatmentForm.prescription" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Medicines</label>
+              <input v-model="treatmentForm.medicines" class="form-control" placeholder="Medicine 1 - 1-0-1, Medicine 2 - 0-1-0..."/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Next Visit</label>
+              <input v-model="treatmentForm.next_visit" type="date" class="form-control"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Doctor Notes</label>
+              <textarea v-model="treatmentForm.doctor_notes" class="form-control" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-primary-custom" @click="saveTreatment">Save Treatment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+
+  <div class="modal fade" id="availabilityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selectedDoctor ? selectedDoctor.full_name : '' }} - Availability</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div v-if="selectedDoctor" class="mb-3 d-flex gap-3 align-items-center">
+            <div class="doctor-avatar">{{ selectedDoctor.full_name.charAt(0) }}</div>
+            <div>
+              <div class="fw-bold">{{ selectedDoctor.full_name }}</div>
+              <div class="text-muted small">{{ selectedDoctor.qualification }} &bull; {{ selectedDoctor.specialization }}</div>
+              <div class="text-muted small">{{ selectedDoctor.experience_years }} years experience</div>
+            </div>
+          </div>
+          <div v-if="!doctorAvailability.length" class="text-center text-muted py-4">No availability set by doctor for next 7 days.</div>
+          <div class="avail-grid" v-else>
+            <div class="avail-row" style="font-weight:600;font-size:.8rem;color:var(--text-muted)">
+              <div>DATE</div><div>MORNING (08-12)</div><div>EVENING (16-21)</div>
+            </div>
+            <div class="avail-row" v-for="avail in doctorAvailability" :key="avail.id">
+              <div class="fw-semibold small">{{ formatDate(avail.date) }}</div>
+
+              
+
+              <div v-if="avail.morning_available !== undefined && (avail.morning_available || avail.morning_start)"
+                   :class="['avail-slot morning',
+                     !avail.morning_available ? 'booked' : '',
+                     bookingForm.date===avail.date && bookingForm.slot==='morning' ? 'selected' : '']"
+                   @click="avail.morning_available && selectBookingSlot(avail.date, 'morning')">
+                {{ avail.morning_available ? (avail.morning_start + ' - ' + avail.morning_end) : 'Already Booked' }}
+              </div>
+              <div v-else class="avail-slot" style="background:#f0f4f8;color:#aaa;cursor:not-allowed;">Not offered</div>
+
+              
+              <div v-if="avail.evening_available !== undefined && (avail.evening_available || avail.evening_start)"
+                   :class="['avail-slot evening',
+                     !avail.evening_available ? 'booked' : '',
+                     bookingForm.date===avail.date && bookingForm.slot==='evening' ? 'selected' : '']"
+                   @click="avail.evening_available && selectBookingSlot(avail.date, 'evening')">
+                {{ avail.evening_available ? (avail.evening_start + ' - ' + avail.evening_end) : 'Already Booked' }}
+              </div>
+              <div v-else class="avail-slot" style="background:#f0f4f8;color:#aaa;cursor:not-allowed;">Not offered</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button class="btn-primary-custom" @click="bookAppointment" :disabled="!bookingForm.date">Book Appointment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="doctorProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Doctor Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" v-if="selectedDoctor">
+          <div class="text-center mb-4">
+            <div class="doctor-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:2rem">{{ selectedDoctor.full_name.charAt(0) }}</div>
+            <h5>{{ selectedDoctor.full_name }}</h5>
+            <div class="text-muted">{{ selectedDoctor.qualification }}</div>
+            <div class="badge bg-light text-dark mt-1">{{ selectedDoctor.specialization }}</div>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="text-muted small">Department</div>
+              <div class="fw-semibold">{{ selectedDoctor.department_name }}</div>
+            </div>
+            <div class="col-6">
+              <div class="text-muted small">Experience</div>
+              <div class="fw-semibold">{{ selectedDoctor.experience_years }} years</div>
+            </div>
+            <div class="col-12">
+              <div class="text-muted small">About</div>
+              <div>{{ selectedDoctor.bio || 'No bio provided.' }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button class="btn-primary-custom" @click="checkDoctorAvailability(selectedDoctor); closeModal('doctorProfileModal')">Check Availability</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="modal fade" id="aptDetailModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Appointment Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" v-if="selectedAppointment">
+          <div class="row g-3">
+            <div class="col-6"><div class="text-muted small">Patient</div><div class="fw-semibold">{{ selectedAppointment.patient_name }}</div></div>
+            <div class="col-6"><div class="text-muted small">Doctor</div><div class="fw-semibold">{{ selectedAppointment.doctor_name }}</div></div>
+            <div class="col-6"><div class="text-muted small">Date</div><div>{{ selectedAppointment.date }}</div></div>
+            <div class="col-6"><div class="text-muted small">Slot</div><div>{{ selectedAppointment.time_slot }}</div></div>
+            <div class="col-6"><div class="text-muted small">Visit Type</div><div>{{ selectedAppointment.visit_type }}</div></div>
+            <div class="col-6"><div class="text-muted small">Status</div><span :class="['badge', statusBadge(selectedAppointment.status)]">{{ selectedAppointment.status }}</span></div>
+          </div>
+          <div v-if="selectedAppointment.treatment" class="mt-3">
+            <hr/>
+            <h6>Treatment Details</h6>
+            <div class="row g-2">
+              <div class="col-12"><div class="text-muted small">Diagnosis</div><div>{{ selectedAppointment.treatment.diagnosis || '-' }}</div></div>
+              <div class="col-12"><div class="text-muted small">Prescription</div><div>{{ selectedAppointment.treatment.prescription || '-' }}</div></div>
+              <div class="col-12"><div class="text-muted small">Medicines</div><div>{{ selectedAppointment.treatment.medicines || '-' }}</div></div>
+              <div class="col-12"><div class="text-muted small">Doctor Notes</div><div>{{ selectedAppointment.treatment.doctor_notes || '-' }}</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="patientHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Patient History: {{ selectedPatient ? selectedPatient.full_name : '' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div v-if="selectedPatient" class="row g-2 mb-3">
+            <div class="col-3"><div class="text-muted small">Department</div><div>{{ selectedPatient.department_name || '-' }}</div></div>
+            <div class="col-3"><div class="text-muted small">Blood Group</div><div>{{ selectedPatient.blood_group || '-' }}</div></div>
+            <div class="col-3"><div class="text-muted small">Gender</div><div>{{ selectedPatient.gender || '-' }}</div></div>
+            <div class="col-3"><div class="text-muted small">Phone</div><div>{{ selectedPatient.phone || '-' }}</div></div>
+          </div>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr><th>#</th><th>Visit Type</th><th>Tests Done</th><th>Diagnosis</th><th>Prescription</th><th>Medicines</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(apt, idx) in selectedPatientHistory" :key="apt.id">
+                <td>{{ idx + 1 }}</td>
+                <td>{{ apt.visit_type }}</td>
+                <td>{{ apt.treatment ? apt.treatment.tests_done : '-' }}</td>
+                <td>{{ apt.treatment ? apt.treatment.diagnosis : '-' }}</td>
+                <td>{{ apt.treatment ? apt.treatment.prescription : '-' }}</td>
+                <td>{{ apt.treatment ? apt.treatment.medicines : '-' }}</td>
+              </tr>
+              <tr v-if="!selectedPatientHistory.length">
+                <td colspan="6" class="text-center text-muted">No history found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="deptDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selectedDept ? selectedDept.name : '' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" v-if="selectedDept">
+          <p class="text-muted">{{ selectedDept.description }}</p>
+          <h6>Doctors in {{ selectedDept.name }}</h6>
+          <div class="row g-3">
+            <div class="col-md-6" v-for="doc in selectedDept.doctors" :key="doc.id">
+              <div class="doctor-card d-flex gap-3 align-items-center">
+                <div class="doctor-avatar" style="width:44px;height:44px;font-size:1rem">{{ doc.full_name.charAt(0) }}</div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">{{ doc.full_name }}</div>
+                  <div class="text-muted small">{{ doc.qualification }}</div>
+                </div>
+                <div>
+                  <button class="btn-accent d-block mb-1" @click="checkDoctorAvailability(doc)">Availability</button>
+                  <button class="btn btn-sm btn-outline-secondary d-block w-100" @click="viewDoctorProfile(doc)">Profile</button>
+                </div>
+              </div>
+            </div>
+            <div v-if="!selectedDept.doctors || !selectedDept.doctors.length" class="col-12 text-muted text-center py-3">No doctors in this department</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="deptModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Department</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Name *</label>
+            <input v-model="deptForm.name" class="form-control" required/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description</label>
+            <textarea v-model="deptForm.description" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-primary-custom" @click="saveDept">Create Department</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="rescheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reschedule Appointment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" v-if="selectedAppointment">
+          <div class="mb-3"><div class="text-muted small">Doctor</div><div class="fw-semibold">{{ selectedAppointment.doctor_name }}</div></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">New Date</label>
+            <input v-model="rescheduleForm.date" type="date" class="form-control" :min="today"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Time Slot</label>
+            <select v-model="rescheduleForm.time_slot" class="form-select">
+              <option value="morning">Morning (08:00 - 12:00)</option>
+              <option value="evening">Evening (16:00 - 21:00)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-primary-custom" @click="submitReschedule">Reschedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
+<script>
+const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
+
+const API = '/api';
+
+createApp({
+  setup() {
+    const token = ref(localStorage.getItem('hms_token') || '');
+    const currentUser = ref(JSON.parse(localStorage.getItem('hms_user') || 'null'));
+    const currentProfile = ref(JSON.parse(localStorage.getItem('hms_profile') || 'null'));
+    const currentPage = ref('');
+    const authMode = ref('login');
+    const authLoading = ref(false);
+    const toasts = ref([]);
+
+    
+    const loginForm = reactive({ username: '', password: '' });
+    const regForm = reactive({});
+    const doctorForm = reactive({});
+    const treatmentForm = reactive({});
+    const bookingForm = reactive({ date: '', slot: '' });
+    const rescheduleForm = reactive({ date: '', time_slot: 'morning' });
+    const profileForm = reactive({});
+    const deptForm = reactive({});
+    const availabilityForm = ref([]);
+
+
+    const adminStats = ref(null);
+    const doctors = ref([]);
+    const patients = ref([]);
+    const appointments = ref([]);
+    const departments = ref([]);
+    const allDepartments = ref([]);
+    const doctorData = ref({});
+    const patientData = ref({});
+    const myAppointments = ref([]);
+    const patientHistory = ref([]);
+    const allPatientAppointments = ref([]);
+    const filteredDoctors = ref([]);
+    const doctorAvailability = ref([]);
+    const searchResults = ref(null);
+    const searchQuery = ref('');
+    const searchType = ref('all');
+    const doctorSearchQ = ref('');
+
+    const editDoctor = ref(null);
+    const selectedAppointment = ref(null);
+    const selectedDoctor = ref(null);
+    const selectedPatient = ref(null);
+    const selectedPatientHistory = ref([]);
+    const selectedDept = ref(null);
+    const showDoctorModal = ref(false);
+    const showDeptModal = ref(false);
+
+    const today = computed(() => new Date().toISOString().split('T')[0]);
+
+    const deptColors = ['#dbeafe','#d1fae5','#fef3c7','#fee2e2','#ede9fe','#fce7f3','#e0f2fe'];
+    const deptIcons = ['bi bi-heart-pulse text-primary','bi bi-bandaid text-success','bi bi-hospital text-warning','bi bi-brain text-danger','bi bi-person-standing text-purple','bi bi-baby text-pink','bi bi-flower1 text-info'];
+
+    const isLoggedIn = computed(() => !!token.value && !!currentUser.value);
+
+    function showToast(message, type = 'info') {
+      const id = Date.now();
+      toasts.value.push({ id, message, type });
+      setTimeout(() => { toasts.value = toasts.value.filter(t => t.id !== id); }, 3500);
+    }
+
+    async function apiFetch(url, options = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token.value) headers['Authorization'] = `Bearer ${token.value}`;
+      const res = await fetch(API + url, { ...options, headers });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    function statusBadge(s) {
+      return s === 'Booked' ? 'badge-booked' : s === 'Completed' ? 'badge-completed' : 'badge-cancelled';
+    }
+
+    function formatDate(d) {
+      if (!d) return '';
+      const date = new Date(d + 'T00:00:00');
+      return date.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) new bootstrap.Modal(el).show();
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) bootstrap.Modal.getInstance(el)?.hide();
+    }
+
+    
+    async function login() {
+      authLoading.value = true;
+      try {
+        const data = await apiFetch('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify(loginForm)
+        });
+        token.value = data.access_token;
+        currentUser.value = data.user;
+        currentProfile.value = data.profile;
+        localStorage.setItem('hms_token', token.value);
+        localStorage.setItem('hms_user', JSON.stringify(data.user));
+        localStorage.setItem('hms_profile', JSON.stringify(data.profile));
+        navigateByRole();
+        showToast(`Welcome back, ${data.user.username}!`, 'success');
+      } catch (e) {
+        showToast(e.message, 'error');
+      } finally {
+        authLoading.value = false;
+      }
+    }
+
+    async function register() {
+      authLoading.value = true;
+      try {
+        const data = await apiFetch('/auth/register', { method: 'POST', body: JSON.stringify(regForm) });
+        
+        token.value = data.access_token;
+        currentUser.value = data.user;
+        currentProfile.value = data.profile;
+        localStorage.setItem('hms_token', token.value);
+        localStorage.setItem('hms_user', JSON.stringify(data.user));
+        localStorage.setItem('hms_profile', JSON.stringify(data.profile));
+        showToast('Registration successful! Welcome!', 'success');
+        navigateByRole();
+      } catch (e) {
+        showToast(e.message, 'error');
+      } finally {
+        authLoading.value = false;
+      }
+    }
+
+    function logout() {
+      token.value = '';
+      currentUser.value = null;
+      currentProfile.value = null;
+      localStorage.removeItem('hms_token');
+      localStorage.removeItem('hms_user');
+      localStorage.removeItem('hms_profile');
+      currentPage.value = '';
+    }
+
+    function navigateByRole() {
+      if (!currentUser.value) return;
+      const role = currentUser.value.role;
+      if (role === 'admin') navigate('adminDashboard');
+      else if (role === 'doctor') navigate('doctorDashboard');
+      else navigate('patientDashboard');
+    }
+
+    async function navigate(page) {
+      currentPage.value = page;
+      
+      try {
+        if (page === 'adminDashboard') await loadAdminDashboard();
+        else if (page === 'adminDoctors') await loadDoctors();
+        else if (page === 'adminPatients') await loadPatients();
+        else if (page === 'adminAppointments') await loadAppointments();
+        else if (page === 'adminDepartments') await loadDepartments();
+        else if (page === 'doctorDashboard') await loadDoctorDashboard();
+        else if (page === 'doctorAppointments') await loadDoctorAppointments();
+        else if (page === 'doctorPatients') await loadDoctorDashboard();
+        else if (page === 'doctorAvailability') initAvailabilityForm();
+        else if (page === 'patientDashboard') await loadPatientDashboard();
+        else if (page === 'patientDepartments') await loadAllDepartments();
+        else if (page === 'patientDoctors') await loadAllDoctors();
+        else if (page === 'patientAppointments') await loadAllPatientAppointments();
+        else if (page === 'patientHistory') await loadPatientHistory();
+        else if (page === 'patientProfile') loadProfileForm();
+      } catch (e) {
+        showToast('Failed to load page data', 'error');
+      }
+    }
+
+    
+    async function loadAdminDashboard() {
+      adminStats.value = await apiFetch('/admin/dashboard');
+      await loadDepartments();
+    }
+    async function loadDoctors() {
+      doctors.value = await apiFetch('/admin/doctors');
+      departments.value = await apiFetch('/admin/departments');
+    }
+    async function loadPatients() {
+      patients.value = await apiFetch('/admin/patients');
+    }
+    async function loadAppointments() {
+      appointments.value = await apiFetch('/admin/appointments');
+    }
+    async function loadDepartments() {
+      departments.value = await apiFetch('/admin/departments');
+    }
+
+    function openEditDoctor(doc) {
+      editDoctor.value = doc;
+      
+      Object.keys(doctorForm).forEach(k => delete doctorForm[k]);
+      Object.assign(doctorForm, {
+        full_name: doc.full_name || '',
+        email: doc.email || '',
+        specialization: doc.specialization || '',
+        qualification: doc.qualification || '',
+        experience_years: doc.experience_years || 0,
+        bio: doc.bio || '',
+        phone: doc.phone || '',
+        department_id: doc.department_id || null,
+      });
+      if (!departments.value.length) {
+        apiFetch('/admin/departments').then(d => { departments.value = d; }).catch(() => {});
+      }
+      openModal('doctorModal');
+    }
+
+    function openAddDoctorModal() {
+      editDoctor.value = null;
+      
+      Object.keys(doctorForm).forEach(k => delete doctorForm[k]);
+      if (!departments.value.length) {
+        apiFetch('/admin/departments').then(d => { departments.value = d; }).catch(() => {});
+      }
+      openModal('doctorModal');
+    }
+
+    async function saveDoctor() {
+      
+      if (!doctorForm.full_name || !doctorForm.full_name.trim()) {
+        showToast('Full name is required', 'error'); return;
+      }
+      if (!editDoctor.value && (!doctorForm.username || !doctorForm.username.trim())) {
+        showToast('Username is required', 'error'); return;
+      }
+      if (!editDoctor.value && (!doctorForm.email || !doctorForm.email.trim())) {
+        showToast('Email is required', 'error'); return;
+      }
+      try {
+        if (editDoctor.value) {
+          await apiFetch(`/admin/doctors/${editDoctor.value.id}`, { method: 'PUT', body: JSON.stringify(doctorForm) });
+          showToast('Doctor updated successfully!', 'success');
+        } else {
+          await apiFetch('/admin/doctors', { method: 'POST', body: JSON.stringify(doctorForm) });
+          showToast('Doctor created successfully!', 'success');
+        }
+        closeModal('doctorModal');
+        editDoctor.value = null;
+        Object.keys(doctorForm).forEach(k => delete doctorForm[k]);
+        await loadDoctors();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function deleteDoctor(id) {
+      if (!confirm('Delete this doctor?')) return;
+      try {
+        await apiFetch(`/admin/doctors/${id}`, { method: 'DELETE' });
+        showToast('Doctor deleted', 'success');
+        await loadDoctors();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function blacklistDoctor(id) {
+      const data = await apiFetch(`/admin/doctors/${id}/blacklist`, { method: 'POST' });
+      showToast(data.message, 'info');
+      await loadDoctors();
+    }
+
+    async function blacklistPatient(id) {
+      const data = await apiFetch(`/admin/patients/${id}/blacklist`, { method: 'POST' });
+      showToast(data.message, 'info');
+      await loadPatients();
+    }
+
+    async function doSearch() {
+      if (!searchQuery.value.trim()) { searchResults.value = null; return; }
+      searchResults.value = await apiFetch(`/admin/search?q=${encodeURIComponent(searchQuery.value)}&type=${searchType.value}`);
+    }
+
+    function openAddDeptModal() {
+      Object.keys(deptForm).forEach(k => delete deptForm[k]);
+      openModal('deptModal');
+    }
+
+    async function saveDept() {
+      if (!deptForm.name || !deptForm.name.trim()) {
+        showToast('Department name is required', 'error'); return;
+      }
+      try {
+        await apiFetch('/admin/departments', { method: 'POST', body: JSON.stringify(deptForm) });
+        showToast('Department created!', 'success');
+        closeModal('deptModal');
+        Object.keys(deptForm).forEach(k => delete deptForm[k]);
+        await loadDepartments();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    
+    async function loadDoctorDashboard() {
+      doctorData.value = await apiFetch('/doctor/dashboard');
+    }
+    async function loadDoctorAppointments() {
+      myAppointments.value = await apiFetch('/doctor/appointments');
+    }
+
+    async function updateAptStatus(id, status) {
+      try {
+        const updated = await apiFetch(`/doctor/appointments/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+
+        const updateInList = (list) => {
+          if (!list) return;
+          const apt = list.find(a => a.id === id);
+          if (apt) apt.status = updated.status;
+        };
+        updateInList(doctorData.value.week_appointments);
+        updateInList(doctorData.value.today_appointments);
+        updateInList(myAppointments.value);
+
+        showToast(`Appointment marked as ${status}`, 'success');
+
+        
+        await loadDoctorDashboard();
+        if (currentPage.value === 'doctorAppointments') await loadDoctorAppointments();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function openTreatmentModal(apt) {
+      selectedAppointment.value = apt;
+      Object.assign(treatmentForm, {
+        visit_type: apt.visit_type || 'In-person',
+        tests_done: apt.treatment?.tests_done || '',
+        diagnosis: apt.treatment?.diagnosis || '',
+        prescription: apt.treatment?.prescription || '',
+        medicines: apt.treatment?.medicines || '',
+        next_visit: apt.treatment?.next_visit || '',
+        doctor_notes: apt.treatment?.doctor_notes || ''
+      });
+      openModal('treatmentModal');
+    }
+
+    async function saveTreatment() {
+      try {
+        await apiFetch(`/doctor/appointments/${selectedAppointment.value.id}/treatment`, {
+          method: 'POST', body: JSON.stringify(treatmentForm)
+        });
+        showToast('Treatment saved! Appointment marked Completed.', 'success');
+        closeModal('treatmentModal');
+
+        
+        const aptId = selectedAppointment.value.id;
+        const updateInList = (list) => {
+          if (!list) return;
+          const apt = list.find(a => a.id === aptId);
+          if (apt) apt.status = 'Completed';
+        };
+        updateInList(doctorData.value.week_appointments);
+        updateInList(doctorData.value.today_appointments);
+        updateInList(myAppointments.value);
+
+        await loadDoctorDashboard();
+        if (currentPage.value === 'doctorAppointments') await loadDoctorAppointments();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function viewPatientHistoryDoctor(patient) {
+      selectedPatient.value = patient;
+      try {
+        const data = await apiFetch(`/doctor/patients/${patient.id}/history`);
+        selectedPatientHistory.value = data.appointments;
+      } catch (e) {
+        selectedPatientHistory.value = [];
+      }
+      openModal('patientHistoryModal');
+    }
+
+    async function viewPatientHistory(patient) {
+      selectedPatient.value = patient;
+      selectedPatientHistory.value = [];
+      openModal('patientHistoryModal');
+    }
+
+    function initAvailabilityForm() {
+      const form = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        const dateStr = d.toISOString().split('T')[0];
+        form.push({
+          date: dateStr,
+          morning_start: '08:00', morning_end: '12:00',
+          evening_start: '16:00', evening_end: '21:00',
+          morning_selected: false, evening_selected: false
+        });
+      }
+      availabilityForm.value = form;
+      
+      apiFetch('/doctor/availability').then(data => {
+        data.forEach(avail => {
+          const row = form.find(r => r.date === avail.date);
+          if (row) {
+            
+            row.morning_selected = !!avail.morning_available;
+            row.evening_selected = !!avail.evening_available;
+            if (avail.morning_start) row.morning_start = avail.morning_start;
+            if (avail.morning_end)   row.morning_end   = avail.morning_end;
+            if (avail.evening_start) row.evening_start = avail.evening_start;
+            if (avail.evening_end)   row.evening_end   = avail.evening_end;
+          }
+        });
+      }).catch(() => {});
+    }
+
+    async function saveAvailability() {
+      const availabilities = availabilityForm.value.map(row => ({
+        date: row.date,
+        morning_selected: row.morning_selected,   
+        evening_selected: row.evening_selected,   
+        morning_start: row.morning_start,
+        morning_end:   row.morning_end,
+        evening_start: row.evening_start,
+        evening_end:   row.evening_end,
+        is_available:  row.morning_selected || row.evening_selected
+      }));
+      try {
+        await apiFetch('/doctor/availability', { method: 'POST', body: JSON.stringify({ availabilities }) });
+        showToast('Availability saved successfully!', 'success');
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+    async function loadPatientDashboard() {
+      patientData.value = await apiFetch('/patient/dashboard');
+    }
+    async function loadAllDepartments() {
+      allDepartments.value = await apiFetch('/patient/departments');
+    }
+    async function loadAllDoctors() {
+      filteredDoctors.value = await apiFetch('/patient/doctors/search');
+    }
+    async function searchDoctors() {
+      filteredDoctors.value = await apiFetch(`/patient/doctors/search?q=${encodeURIComponent(doctorSearchQ.value)}`);
+    }
+    async function loadAllPatientAppointments() {
+      
+      const data = await apiFetch('/patient/dashboard');
+      allPatientAppointments.value = [...(data.upcoming_appointments||[]), ...(data.past_appointments||[])];
+    }
+    async function loadPatientHistory() {
+      patientHistory.value = await apiFetch('/patient/history');
+    }
+
+    function viewDepartmentDetail(dept) {
+      selectedDept.value = dept;
+      openModal('deptDetailModal');
+    }
+
+    async function checkDoctorAvailability(doc) {
+      selectedDoctor.value = doc;
+      bookingForm.date = '';
+      bookingForm.slot = '';
+      try {
+        const data = await apiFetch(`/patient/doctors/${doc.id}/availability`);
+        doctorAvailability.value = data.availability;
+      } catch (e) {
+        doctorAvailability.value = [];
+      }
+      openModal('availabilityModal');
+    }
+
+    function viewDoctorProfile(doc) {
+      selectedDoctor.value = doc;
+      openModal('doctorProfileModal');
+    }
+
+    function selectBookingSlot(date, slot) {
+      bookingForm.date = date;
+      bookingForm.slot = slot;
+    }
+
+    async function bookAppointment() {
+      if (!bookingForm.date || !bookingForm.slot) {
+        showToast('Please select a slot', 'error'); return;
+      }
+      try {
+        await apiFetch('/patient/appointments', {
+          method: 'POST',
+          body: JSON.stringify({
+            doctor_id: selectedDoctor.value.id,
+            date: bookingForm.date,
+            time_slot: bookingForm.slot
+          })
+        });
+        showToast('Appointment booked!', 'success');
+        closeModal('availabilityModal');
+        await loadPatientDashboard();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function cancelAppointment(id) {
+      if (!confirm('Cancel this appointment?')) return;
+      try {
+        await apiFetch(`/patient/appointments/${id}/cancel`, { method: 'PUT' });
+        showToast('Appointment cancelled', 'info');
+        await loadPatientDashboard();
+        if (currentPage.value === 'patientAppointments') await loadAllPatientAppointments();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function openReschedule(apt) {
+      selectedAppointment.value = apt;
+      rescheduleForm.date = '';
+      rescheduleForm.time_slot = 'morning';
+      openModal('rescheduleModal');
+    }
+
+    async function submitReschedule() {
+      try {
+        await apiFetch(`/patient/appointments/${selectedAppointment.value.id}/reschedule`, {
+          method: 'PUT', body: JSON.stringify(rescheduleForm)
+        });
+        showToast('Appointment rescheduled!', 'success');
+        closeModal('rescheduleModal');
+        await loadAllPatientAppointments();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    async function exportCSV() {
+      try {
+        const data = await apiFetch('/patient/export-csv', { method: 'POST' });
+        if (data.csv) {
+          const blob = new Blob([data.csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'treatment_history.csv'; a.click();
+          URL.revokeObjectURL(url);
+          showToast('CSV downloaded!', 'success');
+        } else {
+          showToast(data.message, 'info');
+        }
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function loadProfileForm() {
+      if (currentProfile.value) {
+        Object.assign(profileForm, {
+          full_name: currentProfile.value.full_name,
+          email: currentProfile.value.email || currentUser.value.email,
+          phone: currentProfile.value.phone,
+          gender: currentProfile.value.gender,
+          date_of_birth: currentProfile.value.date_of_birth,
+          blood_group: currentProfile.value.blood_group,
+          emergency_contact: currentProfile.value.emergency_contact,
+          address: currentProfile.value.address
+        });
+      }
+    }
+
+    async function updateProfile() {
+      try {
+        const data = await apiFetch('/patient/profile', { method: 'PUT', body: JSON.stringify(profileForm) });
+        currentProfile.value = data;
+        localStorage.setItem('hms_profile', JSON.stringify(data));
+        showToast('Profile updated!', 'success');
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    function viewAppointmentDetail(apt) {
+      selectedAppointment.value = apt;
+      openModal('aptDetailModal');
+    }
+
+    onMounted(() => {
+      if (isLoggedIn.value) navigateByRole();
+    });
+
+    return {
+      token, currentUser, currentProfile, currentPage, authMode, authLoading, toasts,
+      loginForm, regForm, doctorForm, treatmentForm, bookingForm, rescheduleForm,
+      profileForm, deptForm, availabilityForm,
+      adminStats, doctors, patients, appointments, departments, allDepartments,
+      doctorData, patientData, myAppointments, patientHistory, allPatientAppointments,
+      filteredDoctors, doctorAvailability, searchResults, searchQuery, searchType, doctorSearchQ,
+      editDoctor, selectedAppointment, selectedDoctor, selectedPatient, selectedPatientHistory,
+      selectedDept, openAddDoctorModal, openAddDeptModal,
+      today, deptColors, deptIcons, isLoggedIn,
+      login, register, logout, navigate,
+      loadDoctors, openEditDoctor, saveDoctor, deleteDoctor, blacklistDoctor, blacklistPatient,
+      doSearch, saveDept,
+      updateAptStatus, openTreatmentModal, saveTreatment, viewPatientHistoryDoctor, viewPatientHistory,
+      saveAvailability,
+      viewDepartmentDetail, checkDoctorAvailability, viewDoctorProfile, selectBookingSlot,
+      bookAppointment, cancelAppointment, openReschedule, submitReschedule, exportCSV,
+      updateProfile, viewAppointmentDetail,
+      statusBadge, formatDate
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
